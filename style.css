@@ -24,11 +24,10 @@ header {
     display: grid;
     grid-auto-flow: column;
     align-items: center;
-    padding: 0.5rem;
 }
 
 .left-header-list-items {
-    gap: 0.5rem;
+    padding: 0.5rem;
 }
 
 .right-header-list {
@@ -42,5 +41,14 @@ header {
 }
 
 .right-header-list-items {
-    padding: 0.5rem;
+    padding: 1rem;
 }
+
+.shopping-list{
+    display: grid;
+    grid-auto-flow: column;
+    list-style: none;
+    gap: 0.5rem;
+
+}
+

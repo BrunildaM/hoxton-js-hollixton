@@ -1,27 +1,26 @@
 import './style.css'
 
-/*  <div class="left-header">
-        <h1>Hollixton</h1>
-        <nav>
-            <ul class="left-header-list">
-                <li class="left-header-list-items">Girls</li>
-                <li class="left-header-list-items">Guys</li>
-                <li class="left-header-list-items">Sale</li>
-            </ul>
-        </nav>
-    </div>
+type StoreItem ={
+        id: number,
+        type: string,
+        name: string,
+        image: string,
+        price: number,
+        discountedPrice?: number,
+        dateEntered: string,
+        stock: number
+      }
 
-    <div class="right-header">
-        <nav>
-            <ul  class="right-header-list">
-                <li  class="right-header-list-items"><img src="./src/Media/magnifying glass.png" alt="magnifying-glass" width="25"></li>
-                <li class="right-header-list-items"><img src="./src/Media/user.png" alt="user" width="25"></li>
-                <li class="right-header-list-items"><img src="./src/Media/shopping bag.png" alt="shopping-bag" width="25"></li>
 
-            </ul>
-        </nav>
-    </div>
-    </header> */
+let state = {
+    strore: [
+       
+    ]
+}
+
+
+
+function getHeader() {
 
     const headerEl = document.createElement('header')
 
@@ -52,6 +51,43 @@ import './style.css'
     nav1El.append(leftListEl)
     div1El.append(logoEl, nav1El)
 
+
+
+
+    let div2El = document.createElement('div')
+    div2El.className = 'right-header'
+
+    let nav2El = document.createElement('nav')
+
+    let rightListEl = document.createElement('ul')
+    rightListEl.className = "right-header-list"
+
+    let searchEl = document.createElement('img')
+    searchEl.setAttribute('src', "./src/Media/magnifying glass.png")
+    searchEl.className = "right-header-list-items"
+
+    let userEl = document.createElement('img')
+    userEl.setAttribute('src', "./src/Media/user.png")
+    userEl.className = "right-header-list-items"
+
+    let shoppingBagEl = document.createElement('img')
+    shoppingBagEl.setAttribute('src', "./src/Media/shopping bag.png")
+    shoppingBagEl.className = "right-header-list-items"
+
+    rightListEl.append(searchEl, userEl, shoppingBagEl)
+    nav2El.append(rightListEl)
+    div2El.append(nav2El)
+
+
+    headerEl.append(div1El, div2El)
+
+}
+
+
+
+function render() {
+    getHeader()
+}
 
    
    
