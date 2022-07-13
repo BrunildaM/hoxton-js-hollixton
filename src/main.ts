@@ -80,9 +80,9 @@ function getHeader() {
 
 
     headerEl.append(div1El, div2El)
+    document.body.append(headerEl)
 
 }
-
 
 
 function render() {
