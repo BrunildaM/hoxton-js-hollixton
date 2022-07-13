@@ -12,38 +12,19 @@ type StoreItem ={
       }
 
 
+type Store = {
+  store:StoreItem []
+  }
+       
+       
 const state = {
-        store: [
-          {
-            "id": 1,
-            "type": "Guys",
-            "name": "Crewneck T-Shirt 3-Pack",
-            "image": "https://img.hollisterco.com/is/image/anf/KIC_324-1085-0123-100_prod1",
-            "price": 40,
-            "discountedPrice": 21.99,
-            "dateEntered": "2021/08/10",
-            "stock": 10
-          },
-          {
-            "id": 2,
-            "type": "Girls",
-            "name": "Smocked Tiered Mini Dress",
-            "image": "https://img.hollisterco.com/is/image/anf/KIC_359-1220-1911-805_prod1",
-            "price": 29,
-            "dateEntered": "2021/07/10",
-            "stock": 5
-          },
-          {
-            "id": 3,
-            "type": "Girls",
-            "name": "Gilly Hicks Cozy Joggers",
-            "image": "https://img.hollisterco.com/is/image/anf/KIC_346-1252-0485-116_prod1",
-            "price": 27,
-            "dateEntered": "2021/05/06",
-            "stock": 15
-          }
-        ]
-      }
+  store: []
+ }
+       
+       
+     function getStoreItems() {
+        return fetch ('http://localhost:3005/store') .then (resp => resp.json())
+       }
       
       /*
       <header>
@@ -246,4 +227,10 @@ const state = {
       }
       
       render()
+
+      getStoreItems().then(function(store){
+        state.store = store
+        render()
+      })
+      
       
