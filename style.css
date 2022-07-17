@@ -91,3 +91,30 @@ img {
    background-color: #1477b2;
    color: #fcfcfa;
 }
+
+.modal-wrapper {
+ position: fixed;
+
+ height: 100vh;
+ width: 100vw;
+
+ background-color: #00000060;
+ backdrop-filter: blur(5px);
+
+
+ display: grid;
+ place-items: center;
+}
+
+
+.modal {
+ background-color: white;
+ padding: 1rem;
+ border-radius: 5px;
+}
+
+
+.sign-in-form {
+ display: grid;
+ gap: 1rem;
+}
