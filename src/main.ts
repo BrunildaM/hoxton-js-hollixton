@@ -17,7 +17,9 @@ type Store = {
  typeFilters: string[]
  selectedFilter: string
  selectedItem: null | StoreItem 
- //search: string
+ search: string
+ user: null | string
+ modal: string
 }
 
 
@@ -26,8 +28,9 @@ const state:Store = {
   typeFilters: ['Girls', 'Guys', 'Sale'],
   selectedFilter: 'Home',
   selectedItem: null,
- // search: ''
- //user: null
+  search: '',
+  user: null,
+  modal: ''
 }
 
 
@@ -49,12 +52,35 @@ function getItemsToDisplay () {
     )
   }
 
+  if (state.search !== '') {
+
+  }
+
   return itemsToDisplay
 }
 
 
 function getStoreItems() {
  return fetch ('http://localhost:3005/store') .then (resp => resp.json())
+}
+
+function signIn (email:string, password:any) {
+  return fetch(`http://localhost:3005/users/${email}`)
+  .then (function (resp) {
+    return resp.json()
+  })
+
+  .then(function (user) {
+    if(user.password === password) {
+      alert('Welcome!')
+      state.user = user
+      render()
+
+    }else {
+      alert('Wrong email or password! Please try again!')
+    }
+  })
+
 }
 
 
@@ -94,6 +120,7 @@ function renderHeader() {
   leftListEl.className = 'header-left-list'
 
   for (const filter of state.typeFilters) {
+    
 
   const leftListItemsEl = document.createElement('li')
   leftListItemsEl.className = 'header-left-list-item'
@@ -121,34 +148,50 @@ nav2El.className = 'header-right'
 const rightListEl = document.createElement('ul')
 rightListEl.className = 'header-right-list'
 
+const liEl = document.createElement('li')
+
+const userButton = document.createElement('button')
+userButton.textContent = '🚹'
+userButton.addEventListener('click', function(){
+  state.modal = 'user'
+  render()
+
+}) 
 
 
-const searchEl = document.createElement('li')
-searchEl.className = 'header-right-list-item'
-const searchButtonEl = document.createElement('button')
-searchButtonEl.textContent = '🔍'
 
-searchEl.append(searchButtonEl)
-
-const userEl = document.createElement('li')
-userEl.className = 'header-right-list-item'
-const userButtonEl = document.createElement('button')
-userButtonEl.textContent = '🚹'
-
-userEl.append(userButtonEl)
-
-
-const shoppingBagEl = document.createElement('li')
-shoppingBagEl.className = 'header-right-list-item'
-const shoppingBagButtonEl = document.createElement('button')
-shoppingBagButtonEl.textContent = '👜'
-
-shoppingBagEl.append(shoppingBagButtonEl)
-
-rightListEl.append(searchEl, userEl, shoppingBagEl)
+liEl.append(userButton)
+rightListEl.append(liEl)
 nav2El.append(rightListEl)
 
-nav2El.append(rightListEl)
+
+
+// const searchEl = document.createElement('li')
+// searchEl.className = 'header-right-list-item'
+// const searchButtonEl = document.createElement('button')
+// searchButtonEl.textContent = '🔍'
+
+// searchEl.append(searchButtonEl)
+
+// const userEl = document.createElement('li')
+// userEl.className = 'header-right-list-item'
+// const userButtonEl = document.createElement('button')
+// userButtonEl.textContent = '🚹'
+
+// userEl.append(userButtonEl)
+
+
+// const shoppingBagEl = document.createElement('li')
+// shoppingBagEl.className = 'header-right-list-item'
+// const shoppingBagButtonEl = document.createElement('button')
+// shoppingBagButtonEl.textContent = '👜'
+
+// shoppingBagEl.append(shoppingBagButtonEl)
+
+// rightListEl.append(searchEl, userEl, shoppingBagEl)
+// nav2El.append(rightListEl)
+
+// nav2El.append(rightListEl)
 
 
 headerEl.append(h1El, nav1El, nav2El)
@@ -158,47 +201,10 @@ document.body.append(headerEl)
 }
 
 
-
-function renderMain() {
-  const mainEl = document.createElement('main')
-
-  if (state.selectedItem !== null) {
-
-    const divEl = document.createElement('div')
-    divEl.className = 'product-details'
-
-    const imgEl = document.createElement('img')
-    imgEl.className = 'product-details_image'
-    imgEl.src = state.selectedItem.image
-
-    const titleEl = document.createElement('h2')
-    titleEl.className = 'product-details_title'
-    titleEl.textContent = state.selectedItem.name
-
-    const addToBagBtn = document.createElement('button')
-    addToBagBtn.className = 'product-details_add-to-bag'
-    addToBagBtn.textContent = 'ADD TO BAG'
-    addToBagBtn.addEventListener('click', function() {
-      state.selectedItem = null
-      render()
-    })
-
-    divEl.append(imgEl, titleEl, addToBagBtn)
-    mainEl.append(divEl)
-
-  } else {
-
-    const h2El = document.createElement('h2')
-    h2El.textContent = "Home"
-    h2El.className = "main-title"
-
-    const productList = document.createElement('ul')
-    productList.className = "product-list"
-
-
-for (const product of state.store) {
+function renderProductItem(product:StoreItem, productList:any) {
   const productItem = document.createElement('li')
   productItem.setAttribute('class', 'product-item')
+
 
   productItem.addEventListener('click', function() {
     state.selectedItem = product
@@ -248,13 +254,70 @@ if(isItemNew(product)) {
 }
 
   productList.append(productItem)
-}
-  mainEl.append(h2El, productList)
+
 }
 
+
+function renderItemDetails(mainEl:HTMLElement) {
+  const divEl = document.createElement('div')
+    divEl.className = 'product-details'
+
+    const imgEl = document.createElement('img')
+    imgEl.className = 'product-details_image'
+    imgEl.src = state.selectedItem.image
+
+    const titleEl = document.createElement('h2')
+    titleEl.className = 'product-details_title'
+    titleEl.textContent = state.selectedItem.name
+
+    const addToBagBtn = document.createElement('button')
+    addToBagBtn.className = 'product-details_add-to-bag'
+    addToBagBtn.textContent = 'ADD TO BAG'
+    addToBagBtn.addEventListener('click', function() {
+      state.selectedItem = null
+      render()
+    })
+
+    divEl.append(imgEl, titleEl, addToBagBtn)
+    mainEl.append(divEl)
+}
+
+
+function renderProductList(mainEl:HTMLElement) {
+  const h2El = document.createElement('h2')
+  h2El.textContent = state.selectedFilter
+  h2El.className = "main-title"
+
+  const productList = document.createElement('ul')
+  productList.className = "product-list"
+
+  for (const product of getItemsToDisplay()){
+    renderProductItem(product, productList)
+  }
+
+  mainEl.append(h2El, productList)
+
+}
+
+
+function renderMain() {
+  const mainEl = document.createElement('main')
+
+  if (state.selectedItem !== null){
+
+    renderItemDetails(mainEl)
+
+  } else {
+  
+    renderProductList(mainEl)
+  }
+
+  
   document.body.append(mainEl)
 }
 
+
+  
 /*
 <footer>
       <h2>Hollixton</h2>
@@ -280,6 +343,53 @@ function renderFooter() {
 }
 
 
+function renderUserModal() {
+  const  wrapperEl = document.createElement('div')
+  wrapperEl.className = 'modal-wrapper'
+
+  const modalEl = document.createElement('div')
+  modalEl.className = 'modal'
+
+  const formEl = document.createElement('form')
+  formEl.className = 'sign-in-form'
+  formEl.addEventListener('submit', function(event){
+    event.preventDefault()
+
+    signIn(emailInput.value, passwordInput.value)
+
+    state.modal = ''
+    render()
+  })
+
+  const emailInput = document.createElement('input')
+  emailInput.setAttribute('placeholder', 'Enter your email ...')
+  emailInput.setAttribute('name', 'email')
+  emailInput.setAttribute('type', 'email')
+  emailInput.setAttribute('required', 'true')
+
+  const passwordInput = document.createElement('input')
+  passwordInput.setAttribute('placeholder', 'Enter your password ...')
+  passwordInput.setAttribute('name', 'password')
+  passwordInput.setAttribute('type', 'password')
+  passwordInput.setAttribute('required', 'true')
+
+  const signInButton = document.createElement('button')
+  signInButton.textContent = 'SIGN IN'
+
+  formEl.append(emailInput, passwordInput, signInButton)
+  modalEl.append(formEl)
+  wrapperEl.append(modalEl)
+  document.body.append(wrapperEl)
+}
+
+
+function renderModal() {
+  if(state.modal === '') return
+
+  if (state.modal === 'user') renderUserModal () 
+}
+
+
 
 function render() {
   document.body.innerHTML = ''
@@ -287,6 +397,7 @@ function render() {
   renderHeader()
   renderMain()
   renderFooter()
+  renderModal()
 }
 
 render()
