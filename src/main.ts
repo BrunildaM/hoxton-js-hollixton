@@ -14,23 +14,40 @@ type StoreItem ={
 
 type Store = {
  store:StoreItem []
+ searchItem: string
  typeFilters: string[]
  selectedFilter: string
  selectedItem: null | StoreItem 
  search: string
- user: null | string
+ user: User | null
  modal: string
+ cart: StoreItem[]
+ total: number
 }
+
+
+type User = {
+    firstName: string,
+    lastName: string,
+    id: string,
+    password: string | number,
+    bag: []
+  }
+
+
 
 
 const state:Store = {
   store: [],
+  searchItem: "",
   typeFilters: ['Girls', 'Guys', 'Sale'],
   selectedFilter: 'Home',
   selectedItem: null,
   search: '',
   user: null,
-  modal: ''
+  modal: '',
+  cart: [],
+  total: 0
 }
 
 
@@ -63,6 +80,17 @@ function getItemsToDisplay () {
 function getStoreItems() {
  return fetch ('http://localhost:3005/store') .then (resp => resp.json())
 }
+
+
+function getItemsBySearch() {
+
+  let filterItems = state.store.filter(item => {
+      return item.name.toLowerCase().includes(state.searchItem.toLowerCase())
+  })
+  return filterItems
+}
+
+
 
 function signIn (email:string, password:any) {
   return fetch(`http://localhost:3005/users/${email}`)
@@ -296,6 +324,7 @@ function renderProductList(mainEl:HTMLElement) {
   }
 
   mainEl.append(h2El, productList)
+  
 
 }
 
@@ -343,12 +372,22 @@ function renderFooter() {
 }
 
 
+
+
 function renderUserModal() {
   const  wrapperEl = document.createElement('div')
   wrapperEl.className = 'modal-wrapper'
 
   const modalEl = document.createElement('div')
   modalEl.className = 'modal'
+
+  let closeButton = document.createElement('button')
+    closeButton.textContent = 'X'
+    closeButton.className = 'modal-close-button'
+    closeButton.addEventListener('click', function () {
+      state.modal = ''
+      render()
+    })
 
   const formEl = document.createElement('form')
   formEl.className = 'sign-in-form'
@@ -360,6 +399,8 @@ function renderUserModal() {
     state.modal = ''
     render()
   })
+
+  
 
   const emailInput = document.createElement('input')
   emailInput.setAttribute('placeholder', 'Enter your email ...')
@@ -383,10 +424,103 @@ function renderUserModal() {
 }
 
 
+function renderBagModal () {
+  let mainEl = document.querySelector('main')
+
+  let wrapperEl = document.createElement('div')
+  wrapperEl.className = 'modal-wrapper'
+
+  let containerEl = document.createElement('div')
+  containerEl.className = 'modal-container'
+
+  let closeButton = document.createElement('button')
+  closeButton.textContent = 'X'
+  closeButton.className = 'modal-close-button'
+  closeButton.addEventListener('click', function () {
+    state.modal = ''
+    render()
+  })
+
+  let ItemBag = document.createElement('h2')
+  ItemBag.textContent = 'Bag'
+
+  let items = document.createElement('ul')
+  items.className = 'item-bag'
+
+  for(let item of state.cart){
+      let itemEl = document.createElement('li')
+      itemEl.className = 'item-bag-item'
+
+      let itemImage = document.createElement('img')
+      itemImage.src = item.image
+      itemImage.className = 'item-image'
+      itemImage.width = 100
+
+      let itemDiv = document.createElement('div')
+      itemDiv.className = 'item-div'
+
+      let itemDiv2 = document.createElement('div')
+      itemDiv2.className = 'item-div2'
+
+      let itemName = document.createElement('h3')
+      itemName.textContent = item.name
+      itemName.className = 'item-name'
+
+
+      if(item.discountedPrice){
+          let itemPrice = document.createElement('h4')
+          itemPrice.textContent = `$${item.price}`
+          itemPrice.className = 'item-price'
+
+          let itemDiscount = document.createElement('h4')
+          itemDiscount.textContent = `$${item.discountedPrice}`
+          itemDiscount.className = 'item-discount'
+
+          itemDiv.append(itemPrice, itemDiscount)
+      } else{
+          let itemPrice = document.createElement('h4')
+          itemPrice.textContent = `$${item.price}`
+          itemPrice.className = 'item-price-alone'
+          itemDiv.append(itemPrice)
+      }
+
+      let itemButton = document.createElement('button')
+      itemButton.textContent = 'Remove'
+      itemButton.className = 'item-remove'
+      itemButton.addEventListener('click', function(){
+          state.cart.splice(state.cart.indexOf(item), 1)
+          render()
+      })
+
+      
+
+      itemDiv2.append(itemName, itemDiv, itemButton)
+      itemEl.append(itemImage, itemDiv2)
+      items.append(itemEl)
+  }
+
+  let totalButton = document.createElement('button')
+      totalButton.textContent = `Pay now: $${state.total}` 
+      totalButton.className = 'total-button'
+      totalButton.addEventListener('click', function(){
+          state.cart = []
+          state.total = 0
+          render()
+      })
+  items.append(totalButton)    
+  containerEl.append(closeButton, ItemBag, items)
+  wrapperEl.append(containerEl)
+  mainEl.append(wrapperEl)
+}
+
+
+
 function renderModal() {
   if(state.modal === '') return
 
   if (state.modal === 'user') renderUserModal () 
+
+  if (state.modal === 'bag') renderBagModal()
 }
 
 
