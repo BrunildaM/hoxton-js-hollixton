@@ -136,7 +136,7 @@ function renderHeader() {
   const h1El = document.createElement('h1')
   h1El.textContent = 'HOLLIXTON'
   h1El.addEventListener('click', function () {
-    state.selectedFilter = 'Home'
+    getItemsToDisplay()
     state.selectedItem = null
     render()
   })
@@ -153,7 +153,7 @@ function renderHeader() {
   const leftListItemsEl = document.createElement('li')
   leftListItemsEl.className = 'header-left-list-item'
   const leftLinksEl = document.createElement('a')
-  leftLinksEl.href = filter
+  leftLinksEl.href = '#'
   leftLinksEl.className = 'header-left-link'
   leftLinksEl.textContent = filter
   leftLinksEl.addEventListener('click', function () {
